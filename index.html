@@ -73,11 +73,14 @@
 </div>
 
 <script>
-  const API_KEY = "ISI_API_KEY_KAMU";
+  // ====== CONFIG ======
+  const MAPS_API_KEY = "ISI_API_KEY_GOOGLE";
+  const OPENAI_API_KEY = "ISI_API_KEY_OPENAI";
 
   const TARIF_PER_KM = 2000;
   const BASE_FEE = 5000;
 
+  // ====== HITUNG ONGKIR ======
   async function hitungOngkir() {
     const from = document.getElementById("from").value;
     const to = document.getElementById("to").value;
@@ -87,7 +90,10 @@
       return;
     }
 
-    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(from)}&destinations=${encodeURIComponent(to)}&key=${API_KEY}`;
+    document.getElementById("hasil").style.display = "block";
+    document.getElementById("hasil").innerHTML = "⏳ Menghitung jarak...";
+
+    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(from)}&destinations=${encodeURIComponent(to)}&key=${MAPS_API_KEY}`;
 
     try {
       const res = await fetch(`https://corsproxy.io/?${url}`);
@@ -95,18 +101,51 @@
 
       const meters = data.rows[0].elements[0].distance.value;
       const km = meters / 1000;
-
       const ongkir = Math.round(km * TARIF_PER_KM + BASE_FEE);
 
-      document.getElementById("hasil").style.display = "block";
+      const aiText = await generateAI(from, to, km, ongkir);
+
       document.getElementById("hasil").innerHTML = `
         <b>Jarak:</b> ${km.toFixed(1)} km<br>
-        <b>Ongkir:</b> Rp ${ongkir.toLocaleString("id-ID")}
+        <b>Ongkir:</b> Rp ${ongkir.toLocaleString("id-ID")}<br><br>
+        <b>Penjelasan:</b><br>${aiText}
       `;
     } catch (err) {
-      alert("Gagal hitung jarak");
+      alert("Gagal hitung ongkir");
       console.error(err);
     }
+  }
+
+  // ====== AI EXPLANATION ======
+  async function generateAI(from, to, km, ongkir) {
+    const prompt = `
+Kamu adalah customer service SuruhBoy.
+Jelaskan ongkir dengan bahasa santai, sopan, dan meyakinkan.
+
+Data:
+- Lokasi jemput: ${from}
+- Lokasi tujuan: ${to}
+- Jarak: ${km.toFixed(1)} km
+- Ongkir: Rp ${ongkir}
+
+Jawaban maksimal 2 kalimat.
+`;
+
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + OPENAI_API_KEY
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.6
+      })
+    });
+
+    const data = await res.json();
+    return data.choices[0].message.content;
   }
 </script>
 
