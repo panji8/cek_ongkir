@@ -1,153 +1,213 @@
 <!doctype html>
 <html lang="id">
 <head>
-  <meta charset="utf-8">
-  <title>Cek Ongkir - SuruhBoy</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<title>SuruhBoy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #f4f5f7;
-      padding: 20px;
-    }
-    .card {
-      background: #fff;
-      padding: 20px;
-      max-width: 420px;
-      margin: auto;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.1);
-    }
-    h1 {
-      font-size: 20px;
-      margin-bottom: 16px;
-    }
-    label {
-      font-size: 14px;
-      display: block;
-      margin-top: 12px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      margin-top: 16px;
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: #111;
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .result {
-      margin-top: 16px;
-      background: #f0f0f0;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 14px;
-    }
-  </style>
+<style>
+:root{
+  --blue:#0b3b8c;
+  --bg:#f4f6f8;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,sans-serif;
+  background:var(--bg);
+  color:#111;
+}
+.container{
+  max-width:420px;
+  margin:auto;
+  padding:16px;
+}
+
+/* HERO */
+.hero{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+}
+.hero small{
+  color:#666;
+}
+.hero h1{
+  margin:8px 0 0;
+  font-size:22px;
+  color:var(--blue);
+}
+
+/* SERVICE GRID */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin:16px 0;
+}
+.service{
+  background:#fff;
+  border-radius:14px;
+  padding:16px 12px;
+  text-align:center;
+}
+.icon{
+  width:48px;
+  height:48px;
+  background:var(--blue);
+  border-radius:50%;
+  margin:0 auto 8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:20px;
+}
+.service span{
+  font-size:14px;
+  font-weight:500;
+}
+
+/* BUTTON */
+.btn{
+  width:100%;
+  background:var(--blue);
+  color:#fff;
+  border:none;
+  padding:14px;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:600;
+  margin:8px 0 16px;
+}
+
+/* CHECK AREA */
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+}
+.card h3{
+  margin:0 0 12px;
+  font-size:16px;
+}
+.row{
+  display:flex;
+  gap:8px;
+}
+input,select{
+  flex:1;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+}
+.check{
+  background:var(--blue);
+  color:#fff;
+  border:none;
+  padding:12px 16px;
+  border-radius:10px;
+}
+
+/* TESTI */
+.testi{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+}
+.testi-card{
+  background:#fff;
+  border-radius:14px;
+  padding:12px;
+  min-width:120px;
+  text-align:center;
+}
+.avatar{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:#ddd;
+  margin:0 auto 8px;
+}
+.testi-card small{
+  font-size:12px;
+  color:#555;
+}
+</style>
 </head>
 
 <body>
+<div class="container">
 
-<div class="card">
-  <h1>🚚 Cek Ongkir SuruhBoy</h1>
+  <!-- HERO -->
+  <div class="hero">
+    <small>Punya pertanyaan?</small>
+    <h1>Semua kebutuhanmu, tinggal suruh</h1>
+  </div>
 
-  <label>Lokasi Jemput</label>
-  <input id="from" placeholder="Contoh: Boyolali">
+  <!-- SERVICE -->
+  <div class="grid">
+    <div class="service">
+      <div class="icon">🍔</div>
+      <span>Antar Makanan</span>
+    </div>
+    <div class="service">
+      <div class="icon">📦</div>
+      <span>Kirim Barang</span>
+    </div>
+    <div class="service">
+      <div class="icon">🛒</div>
+      <span>Titip Beli</span>
+    </div>
+    <div class="service">
+      <div class="icon">📄</div>
+      <span>Dokumen & Urusan Cepat</span>
+    </div>
+  </div>
 
-  <label>Lokasi Tujuan</label>
-  <input id="to" placeholder="Contoh: Solo">
+  <button class="btn">Suruh Lain</button>
 
-  <button onclick="hitungOngkir()">Cek Ongkir</button>
+  <!-- CHECK AREA 1 -->
+  <div class="card">
+    <h3>Cek ketersediaan wilayah</h3>
+    <div class="row">
+      <input placeholder="Masukkan kecamatan atau kelurahan">
+      <button class="check">Cek</button>
+    </div>
+  </div>
 
-  <div id="hasil" class="result" style="display:none;"></div>
+  <!-- CHECK AREA 2 -->
+  <div class="card">
+    <h3>Cek ketersediaan wilayah</h3>
+    <select>
+      <option>Pilih Kecamatan</option>
+      <option>Boyolali</option>
+      <option>Sawit</option>
+      <option>Mojosongo</option>
+    </select>
+  </div>
+
+  <!-- TESTIMONI -->
+  <div class="card">
+    <h3>Testimoni</h3>
+    <div class="testi">
+      <div class="testi-card">
+        <div class="avatar"></div>
+        <small>Fast respon 👍</small>
+      </div>
+      <div class="testi-card">
+        <div class="avatar"></div>
+        <small>Driver ramah</small>
+      </div>
+      <div class="testi-card">
+        <div class="avatar"></div>
+        <small>Bantu banget</small>
+      </div>
+    </div>
+  </div>
+
 </div>
-
-<script>
-  // ====== CONFIG ======
-  const MAPS_API_KEY = "ISI_API_KEY_GOOGLE";
-  const OPENAI_API_KEY = "ISI_API_KEY_OPENAI";
-
-  const TARIF_PER_KM = 2000;
-  const BASE_FEE = 5000;
-
-  // ====== HITUNG ONGKIR ======
-  async function hitungOngkir() {
-    const from = document.getElementById("from").value;
-    const to = document.getElementById("to").value;
-
-    if (!from || !to) {
-      alert("Lengkapi lokasi dulu");
-      return;
-    }
-
-    document.getElementById("hasil").style.display = "block";
-    document.getElementById("hasil").innerHTML = "⏳ Menghitung jarak...";
-
-    const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(from)}&destinations=${encodeURIComponent(to)}&key=${MAPS_API_KEY}`;
-
-    try {
-      const res = await fetch(`https://corsproxy.io/?${url}`);
-      const data = await res.json();
-
-      const meters = data.rows[0].elements[0].distance.value;
-      const km = meters / 1000;
-      const ongkir = Math.round(km * TARIF_PER_KM + BASE_FEE);
-
-      const aiText = await generateAI(from, to, km, ongkir);
-
-      document.getElementById("hasil").innerHTML = `
-        <b>Jarak:</b> ${km.toFixed(1)} km<br>
-        <b>Ongkir:</b> Rp ${ongkir.toLocaleString("id-ID")}<br><br>
-        <b>Penjelasan:</b><br>${aiText}
-      `;
-    } catch (err) {
-      alert("Gagal hitung ongkir");
-      console.error(err);
-    }
-  }
-
-  // ====== AI EXPLANATION ======
-  async function generateAI(from, to, km, ongkir) {
-    const prompt = `
-Kamu adalah customer service SuruhBoy.
-Jelaskan ongkir dengan bahasa santai, sopan, dan meyakinkan.
-
-Data:
-- Lokasi jemput: ${from}
-- Lokasi tujuan: ${to}
-- Jarak: ${km.toFixed(1)} km
-- Ongkir: Rp ${ongkir}
-
-Jawaban maksimal 2 kalimat.
-`;
-
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + OPENAI_API_KEY
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.6
-      })
-    });
-
-    const data = await res.json();
-    return data.choices[0].message.content;
-  }
-</script>
-
 </body>
 </html>
