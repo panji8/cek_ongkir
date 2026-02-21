@@ -225,6 +225,29 @@
             border-bottom: none;
         }
 
+        .file-input-container {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .file-input-container label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .file-input-container input {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+        }
+
         footer {
             background: #f8f9fa;
             padding: 20px;
@@ -262,11 +285,18 @@
             <div class="form-container">
                 <h2><i class="fas fa-search"></i> Cek Ongkir</h2>
                 
+                <div class="file-input-container">
+                    <label for="geojsonFile">
+                        <i class="fas fa-file-upload"></i> Upload File GeoJSON
+                    </label>
+                    <input type="file" id="geojsonFile" accept=".geojson, .json" onchange="handleFileUpload(event)">
+                </div>
+                
                 <div class="form-group">
                     <label for="origin">
                         <i class="fas fa-map-marker-alt"></i> Kecamatan Asal
                     </label>
-                    <select id="origin">
+                    <select id="origin" disabled>
                         <option value="">Pilih kecamatan asal</option>
                     </select>
                 </div>
@@ -275,7 +305,7 @@
                     <label for="destination">
                         <i class="fas fa-map-marker-alt"></i> Kecamatan Tujuan
                     </label>
-                    <select id="destination">
+                    <select id="destination" disabled>
                         <option value="">Pilih kecamatan tujuan</option>
                     </select>
                 </div>
@@ -287,7 +317,7 @@
                     <input type="number" id="weight" min="0.1" step="0.1" value="1">
                 </div>
 
-                <button class="btn-check" id="checkOngkir" onclick="checkOngkir()">
+                <button class="btn-check" id="checkOngkir" onclick="checkOngkir()" disabled>
                     <i class="fas fa-calculator"></i> Hitung Ongkir
                 </button>
 
@@ -308,6 +338,7 @@
                         <li><i class="fas fa-tag"></i> Tarif dasar: Rp 5.000/km</li>
                         <li><i class="fas fa-weight"></i> Minimal 1kg, kelipatan Rp 1.000/kg</li>
                         <li><i class="fas fa-clock"></i> Estimasi: 1-2 hari kerja</li>
+                        <li><i class="fas fa-database"></i> Data: 19 kecamatan di Boyolali</li>
                     </ul>
                 </div>
             </div>
@@ -320,243 +351,45 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Data kecamatan di Kabupaten Boyolali (contoh, akan diganti dengan data dari GeoJSON)
+        // Data kecamatan di Kabupaten Boyolali
         const boyolaliData = {
             type: "FeatureCollection",
-            features: [
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Ampel",
-                        kecamatan: "Ampel",
-                        center: [-110.5742, -7.4315]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.5742, -7.4315]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Andong",
-                        kecamatan: "Andong",
-                        center: [-110.7361, -7.3728]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.7361, -7.3728]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Banyudono",
-                        kecamatan: "Banyudono",
-                        center: [-110.6911, -7.5333]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.6911, -7.5333]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Boyolali",
-                        kecamatan: "Boyolali",
-                        center: [-110.6036, -7.5331]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.6036, -7.5331]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Cepogo",
-                        kecamatan: "Cepogo",
-                        center: [-110.5203, -7.5031]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.5203, -7.5031]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Juwangi",
-                        kecamatan: "Juwangi",
-                        center: [-110.7358, -7.2119]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.7358, -7.2119]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Karanggede",
-                        kecamatan: "Karanggede",
-                        center: [-110.6497, -7.3219]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.6497, -7.3219]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Kemusu",
-                        kecamatan: "Kemusu",
-                        center: [-110.6967, -7.2631]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.6967, -7.2631]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Klego",
-                        kecamatan: "Klego",
-                        center: [-110.5856, -7.3431]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.5856, -7.3431]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Mojosongo",
-                        kecamatan: "Mojosongo",
-                        center: [-110.5936, -7.5633]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.5936, -7.5633]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Musuk",
-                        kecamatan: "Musuk",
-                        center: [-110.5397, -7.5706]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.5397, -7.5706]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Ngemplak",
-                        kecamatan: "Ngemplak",
-                        center: [-110.7169, -7.4919]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.7169, -7.4919]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Nogosari",
-                        kecamatan: "Nogosari",
-                        center: [-110.7197, -7.4286]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.7197, -7.4286]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Sambi",
-                        kecamatan: "Sambi",
-                        center: [-110.6903, -7.4956]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.6903, -7.4956]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Sawit",
-                        kecamatan: "Sawit",
-                        center: [-110.7336, -7.5619]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.7336, -7.5619]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Selo",
-                        kecamatan: "Selo",
-                        center: [-110.4406, -7.4914]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.4406, -7.4914]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Simo",
-                        kecamatan: "Simo",
-                        center: [-110.6867, -7.3842]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.6867, -7.3842]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Teras",
-                        kecamatan: "Teras",
-                        center: [-110.6511, -7.5642]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.6511, -7.5642]
-                    }
-                },
-                {
-                    type: "Feature",
-                    properties: {
-                        name: "Wonosegoro",
-                        kecamatan: "Wonosegoro",
-                        center: [-110.6689, -7.2939]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [-110.6689, -7.2939]
-                    }
-                }
-            ]
+            features: []
+        };
+
+        // Data kecamatan Boyolali (19 kecamatan)
+        const kecamatanList = [
+            "Ampel", "Andong", "Banyudono", "Boyolali", "Cepogo", 
+            "Juwangi", "Karanggede", "Kemusu", "Klego", "Mojosongo",
+            "Musuk", "Ngemplak", "Nogosari", "Sambi", "Sawit",
+            "Selo", "Simo", "Teras", "Wonosegoro"
+        ];
+
+        // Koordinat pusat setiap kecamatan (berdasarkan perkiraan)
+        const kecamatanCoords = {
+            "Ampel": [-7.4315, -110.5742],
+            "Andong": [-7.3728, -110.7361],
+            "Banyudono": [-7.5333, -110.6911],
+            "Boyolali": [-7.5331, -110.6036],
+            "Cepogo": [-7.5031, -110.5203],
+            "Juwangi": [-7.2119, -110.7358],
+            "Karanggede": [-7.3219, -110.6497],
+            "Kemusu": [-7.2631, -110.6967],
+            "Klego": [-7.3431, -110.5856],
+            "Mojosongo": [-7.5633, -110.5936],
+            "Musuk": [-7.5706, -110.5397],
+            "Ngemplak": [-7.4919, -110.7169],
+            "Nogosari": [-7.4286, -110.7197],
+            "Sambi": [-7.4956, -110.6903],
+            "Sawit": [-7.5619, -110.7336],
+            "Selo": [-7.4914, -110.4406],
+            "Simo": [-7.3842, -110.6867],
+            "Teras": [-7.5642, -110.6511],
+            "Wonosegoro": [-7.2939, -110.6689]
         };
 
         // Inisialisasi peta
-        const map = L.map('map').setView([-7.5, -110.6], 10);
+        const map = L.map('map').setView([-7.5, 110.6], 10);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
@@ -564,21 +397,108 @@
 
         // Variable untuk menyimpan layer dan marker
         let kecamatanLayer = L.layerGroup().addTo(map);
+        let polygonLayer = L.layerGroup().addTo(map);
         let markers = {};
+        let boyolaliPolygon = null;
 
-        // Fungsi untuk memuat data GeoJSON
-        function loadGeoJSON() {
-            // Di sini kita akan mencoba memuat file GeoJSON
-            // Karena tidak bisa akses file lokal langsung, kita gunakan data contoh
+        // Fungsi untuk handle upload file
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const geojson = JSON.parse(e.target.result);
+                    displayGeoJSON(geojson);
+                } catch (error) {
+                    alert('Error parsing GeoJSON file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Fungsi untuk menampilkan GeoJSON di peta
+        function displayGeoJSON(geojson) {
+            // Hapus polygon yang ada
+            polygonLayer.clearLayers();
             
-            // Tampilkan data kecamatan di peta
+            // Tampilkan polygon Boyolali
+            if (geojson.geometry && geojson.geometry.type === 'Polygon') {
+                boyolaliPolygon = L.polygon(geojson.geometry.coordinates[0].map(coord => [coord[1], coord[0]]), {
+                    color: '#667eea',
+                    weight: 3,
+                    opacity: 0.8,
+                    fillColor: '#667eea',
+                    fillOpacity: 0.2
+                }).addTo(polygonLayer);
+                
+                boyolaliPolygon.bindPopup(`
+                    <b>${geojson.properties.name}</b><br>
+                    Kode: ${geojson.properties.code}<br>
+                    Level: ${geojson.properties.level}
+                `);
+                
+                // Zoom ke polygon
+                map.fitBounds(boyolaliPolygon.getBounds());
+                
+                // Generate data kecamatan
+                generateKecamatanData();
+            } else {
+                alert('File GeoJSON tidak valid. Harap upload file yang benar.');
+            }
+        }
+
+        // Fungsi untuk generate data kecamatan dari polygon
+        function generateKecamatanData() {
+            // Buat data kecamatan
+            kecamatanList.forEach((kecamatan, index) => {
+                const coords = kecamatanCoords[kecamatan];
+                
+                const feature = {
+                    type: "Feature",
+                    properties: {
+                        name: kecamatan,
+                        kecamatan: kecamatan,
+                        code: `33.09.${String(index + 1).padStart(3, '0')}`,
+                        center: [coords[1], coords[0]]
+                    },
+                    geometry: {
+                        type: "Point",
+                        coordinates: [coords[1], coords[0]]
+                    }
+                };
+                
+                boyolaliData.features.push(feature);
+            });
+            
+            // Tampilkan di peta
+            displayKecamatan();
+        }
+
+        // Fungsi untuk menampilkan kecamatan di peta
+        function displayKecamatan() {
+            kecamatanLayer.clearLayers();
+            markers = {};
+            
             boyolaliData.features.forEach(feature => {
                 const coords = feature.geometry.coordinates;
                 const name = feature.properties.kecamatan;
                 
-                // Buat marker
-                const marker = L.marker([coords[1], coords[0]]).addTo(kecamatanLayer);
-                marker.bindPopup(`<b>${name}</b>`);
+                // Buat marker dengan icon kustom
+                const marker = L.marker([coords[1], coords[0]], {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: `<i class="fas fa-map-marker-alt" style="color: #667eea; font-size: 24px;"></i>`,
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 24]
+                    })
+                }).addTo(kecamatanLayer);
+                
+                marker.bindPopup(`
+                    <b>${name}</b><br>
+                    Kode: ${feature.properties.code}
+                `);
                 
                 markers[name] = {
                     marker: marker,
@@ -586,14 +506,13 @@
                 };
             });
 
+            // Enable dropdown dan button
+            document.getElementById('origin').disabled = false;
+            document.getElementById('destination').disabled = false;
+            document.getElementById('checkOngkir').disabled = false;
+            
             // Isi dropdown
             populateDropdowns();
-            
-            // Sesuaikan zoom peta
-            const bounds = kecamatanLayer.getBounds();
-            if (bounds.isValid()) {
-                map.fitBounds(bounds);
-            }
         }
 
         // Fungsi untuk mengisi dropdown
@@ -601,9 +520,13 @@
             const originSelect = document.getElementById('origin');
             const destSelect = document.getElementById('destination');
             
-            const kecamatanList = boyolaliData.features.map(f => f.properties.kecamatan).sort();
+            // Kosongkan dropdown
+            originSelect.innerHTML = '<option value="">Pilih kecamatan asal</option>';
+            destSelect.innerHTML = '<option value="">Pilih kecamatan tujuan</option>';
             
-            kecamatanList.forEach(kecamatan => {
+            const sortedKecamatan = kecamatanList.sort();
+            
+            sortedKecamatan.forEach(kecamatan => {
                 originSelect.innerHTML += `<option value="${kecamatan}">${kecamatan}</option>`;
                 destSelect.innerHTML += `<option value="${kecamatan}">${kecamatan}</option>`;
             });
@@ -685,7 +608,7 @@
             
             // Buat garis lurus antara dua titik
             window.routeLayer = L.polyline([originCoords, destCoords], {
-                color: '#667eea',
+                color: '#ff4444',
                 weight: 4,
                 opacity: 0.7,
                 dashArray: '5, 10'
@@ -699,19 +622,20 @@
             markers[origin].marker.openPopup();
         }
 
-        // Load data saat halaman dimuat
+        // Load data awal (menggunakan polygon dari file yang diupload)
         window.onload = function() {
-            loadGeoJSON();
+            // Tampilkan instruksi untuk upload file
+            alert('Silakan upload file GeoJSON Kabupaten Boyolali untuk melihat peta!');
             
             // Event listener untuk dropdown
             document.getElementById('origin').addEventListener('change', function(e) {
-                if (e.target.value) {
+                if (e.target.value && markers[e.target.value]) {
                     markers[e.target.value].marker.openPopup();
                 }
             });
             
             document.getElementById('destination').addEventListener('change', function(e) {
-                if (e.target.value) {
+                if (e.target.value && markers[e.target.value]) {
                     markers[e.target.value].marker.openPopup();
                 }
             });
