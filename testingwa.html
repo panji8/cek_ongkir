@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTWA - Kirim ke Panji</title>
+    <title>CTWA - Kirim ke Panji dengan Gambar</title>
     <style>
         * {
             margin: 0;
@@ -26,7 +26,7 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             padding: 40px;
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             text-align: center;
         }
@@ -58,7 +58,7 @@
 
         .info-item strong {
             color: #25D366;
-            width: 100px;
+            width: 120px;
             display: inline-block;
         }
 
@@ -84,6 +84,7 @@
             cursor: pointer;
             border: none;
             font-size: 16px;
+            width: 100%;
         }
 
         .btn-wa {
@@ -114,6 +115,17 @@
             color: white;
         }
 
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
         .image-preview {
             margin-top: 30px;
             border-top: 2px dashed #ddd;
@@ -129,27 +141,29 @@
         .preview-box {
             background: #f9f9f9;
             border-radius: 10px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            padding: 20px;
         }
 
-        .file-icon {
-            width: 40px;
-            height: 40px;
-            background: #25D366;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
+        .image-container {
+            max-width: 100%;
+            margin: 10px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
         .file-info {
+            margin-top: 15px;
             text-align: left;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 8px;
         }
 
         .file-name {
@@ -160,6 +174,20 @@
         .file-size {
             font-size: 12px;
             color: #888;
+        }
+
+        .github-link {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .github-link a {
+            color: #25D366;
+            text-decoration: none;
+        }
+
+        .github-link a:hover {
+            text-decoration: underline;
         }
 
         .footer {
@@ -181,8 +209,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>📱 CTWA - Chat Panji</h1>
-        <p class="subtitle">Klik tombol di bawah untuk chat dengan Panji via WhatsApp</p>
+        <h1>📱 CTWA - Chat dengan Panji</h1>
+        <p class="subtitle">Kirim pesan "hai Panji" dengan gambar testing.png</p>
         
         <div class="info-box">
             <div class="info-item">
@@ -192,12 +220,15 @@
                 <strong>Pesan:</strong> "hai Panji"
             </div>
             <div class="info-item">
-                <strong>File:</strong> testing.png (akan otomatis terkirim)
+                <strong>File:</strong> testing.png (dari GitHub)
+            </div>
+            <div class="info-item">
+                <strong>Lokasi:</strong> Repository yang sama
             </div>
         </div>
 
         <div class="btn-container">
-            <!-- CTWA Button dengan pesan dan gambar -->
+            <!-- CTWA Button dengan pesan -->
             <a href="https://wa.me/62895622321360?text=hai%20Panji" 
                target="_blank" 
                class="btn btn-wa" 
@@ -206,66 +237,129 @@
                 Chat via WhatsApp
             </a>
             
-            <!-- Button untuk mengirim gambar (membuka gallery WhatsApp) -->
-            <button class="btn btn-outline" id="sendImageBtn">
-                <i>📎</i>
-                Kirim Gambar testing.png
+            <!-- Button untuk copy link gambar -->
+            <button class="btn btn-outline" id="copyLinkBtn">
+                <i>🔗</i>
+                Copy Link Gambar
             </button>
+            
+            <!-- Button untuk buka gambar di tab baru -->
+            <button class="btn btn-secondary" id="viewImageBtn">
+                <i>👁️</i>
+                Lihat Gambar di Browser
+            </button>
+            
+            <!-- Button untuk kirim link gambar via WA -->
+            <a href="#" target="_blank" class="btn btn-outline" id="sendImageLinkBtn">
+                <i>📎</i>
+                Kirim Link Gambar via WA
+            </a>
         </div>
 
         <div class="image-preview">
-            <div class="image-title">Preview File yang akan dikirim:</div>
+            <div class="image-title">Preview Gambar (dari GitHub):</div>
             <div class="preview-box">
-                <div class="file-icon">📷</div>
+                <div class="image-container" id="imageContainer">
+                    <!-- Gambar akan dimuat dari GitHub -->
+                    <img src="testing.png" 
+                         alt="testing.png" 
+                         id="previewImage"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/400x200?text=Gambar+tidak+dapat+dimuat';">
+                </div>
                 <div class="file-info">
-                    <div class="file-name">testing.png</div>
-                    <div class="file-size">~15 KB</div>
+                    <div class="file-name">📷 testing.png</div>
+                    <div class="file-size">Lokasi: Repository GitHub yang sama</div>
+                </div>
+                <div class="github-link">
+                    🔗 URL Gambar: <span id="imageUrl">https://panji8.github.io/cek_ongkir/testing.png</span>
                 </div>
             </div>
         </div>
 
         <div class="footer">
-            *Klik tombol chat untuk membuka WhatsApp<br>
-            *Setelah chat terbuka, klik attachment lalu pilih file testing.png dari device Anda
+            *Klik chat untuk buka WhatsApp dengan pesan "hai Panji"<br>
+            *Kirim link gambar atau download dulu gambar lalu kirim manual
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const waButton = document.getElementById('waButton');
-            const sendImageBtn = document.getElementById('sendImageBtn');
-            
-            // Data pesan
             const phoneNumber = '62895622321360';
             const message = 'hai Panji';
             
-            // CTWA untuk chat biasa
-            waButton.href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            // URL gambar di GitHub Pages
+            // Asumsi repository di-publish ke GitHub Pages
+            const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/');
+            const imageFileName = 'testing.png';
+            const imageFullUrl = baseUrl + imageFileName;
             
-            // Fungsi untuk mengirim gambar (membuka WA dengan instruksi kirim gambar)
-            sendImageBtn.addEventListener('click', function() {
-                // Buat pesan khusus untuk mengirim gambar
-                const imageMessage = `${message}\n\n📸 *Saya ingin mengirim file gambar:*\nNama file: testing.png\n\nSilakan klik attachment (📎) lalu pilih file "testing.png" dari device Anda.`;
-                
-                // Buka WhatsApp dengan pesan tersebut
+            // Update tampilan URL
+            document.getElementById('imageUrl').textContent = imageFullUrl;
+            
+            // Set gambar
+            const previewImage = document.getElementById('previewImage');
+            previewImage.src = imageFileName;
+            
+            // CTWA untuk chat biasa
+            document.getElementById('waButton').href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            
+            // Button untuk copy link gambar
+            document.getElementById('copyLinkBtn').addEventListener('click', function() {
+                navigator.clipboard.writeText(imageFullUrl).then(function() {
+                    alert('✅ Link gambar berhasil di-copy!\n\nLink: ' + imageFullUrl);
+                }).catch(function(err) {
+                    alert('❌ Gagal copy link. Silakan copy manual:\n\n' + imageFullUrl);
+                });
+            });
+            
+            // Button untuk lihat gambar di tab baru
+            document.getElementById('viewImageBtn').addEventListener('click', function() {
+                window.open(imageFileName, '_blank');
+            });
+            
+            // Button untuk kirim link gambar via WA
+            document.getElementById('sendImageLinkBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                const imageMessage = `${message}\n\n📸 *Berikut adalah gambar yang ingin saya kirim:*\n${imageFullUrl}\n\nSilakan klik link di atas untuk melihat gambar, atau download terlebih dahulu.`;
                 window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(imageMessage)}`, '_blank');
             });
-
-            // Efek hover untuk button
+            
+            // Button untuk kirim gambar (dengan instruksi manual)
+            const sendImageBtn = document.createElement('button');
+            sendImageBtn.className = 'btn btn-outline';
+            sendImageBtn.innerHTML = '<i>📥</i> Download & Kirim Gambar';
+            sendImageBtn.onclick = function() {
+                const downloadMessage = `${message}\n\n📥 *Cara kirim gambar testing.png:*\n\n1. Klik link ini untuk download gambar: ${imageFullUrl}\n2. Setelah download, buka chat ini\n3. Klik attachment (📎) dan pilih gambar yang sudah di-download`;
+                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(downloadMessage)}`, '_blank');
+            };
+            
+            // Tambahkan button ke container
+            document.querySelector('.btn-container').appendChild(sendImageBtn);
+            
+            // Efek hover
             const buttons = document.querySelectorAll('.btn');
             buttons.forEach(button => {
                 button.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scale(1.05)';
+                    this.style.transform = 'scale(1.02)';
                 });
                 
                 button.addEventListener('mouseleave', function() {
                     this.style.transform = 'scale(1)';
                 });
             });
-
-            // Simulasi auto-send gambar (Catatan: WhatsApp API tidak mengizinkan auto-send file)
-            console.log('⚠️ WhatsApp API tidak mengizinkan pengiriman file otomatis karena alasan keamanan.');
-            console.log('ℹ️ User harus memilih file manual setelah chat terbuka.');
+            
+            // Cek apakah gambar bisa dimuat
+            previewImage.onload = function() {
+                console.log('✅ Gambar berhasil dimuat dari:', imageFileName);
+            };
+            
+            previewImage.onerror = function() {
+                console.log('⚠️ Gambar tidak dapat dimuat langsung. Pastikan file testing.png ada di folder yang sama.');
+                console.log('📁 Mencoba memuat dari:', imageFullUrl);
+            };
+            
+            console.log('📁 Base URL:', baseUrl);
+            console.log('🖼️ Image URL:', imageFullUrl);
         });
     </script>
 </body>
