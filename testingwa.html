@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTWA - Kirim ke Panji</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .info-box {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .info-item {
+            margin-bottom: 10px;
+            color: #444;
+        }
+
+        .info-item strong {
+            color: #25D366;
+            width: 100px;
+            display: inline-block;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+
+        .btn-wa {
+            background: #25D366;
+            color: white;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-wa:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        .btn-wa i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #25D366;
+            color: #25D366;
+        }
+
+        .btn-outline:hover {
+            background: #25D366;
+            color: white;
+        }
+
+        .image-preview {
+            margin-top: 30px;
+            border-top: 2px dashed #ddd;
+            padding-top: 25px;
+        }
+
+        .image-title {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .preview-box {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #25D366;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .file-info {
+            text-align: left;
+        }
+
+        .file-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 CTWA - Chat Panji</h1>
+        <p class="subtitle">Klik tombol di bawah untuk chat dengan Panji via WhatsApp</p>
+        
+        <div class="info-box">
+            <div class="info-item">
+                <strong>Nomor:</strong> +62 895-6223-21360
+            </div>
+            <div class="info-item">
+                <strong>Pesan:</strong> "hai Panji"
+            </div>
+            <div class="info-item">
+                <strong>File:</strong> testing.png (akan otomatis terkirim)
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <!-- CTWA Button dengan pesan dan gambar -->
+            <a href="https://wa.me/62895622321360?text=hai%20Panji" 
+               target="_blank" 
+               class="btn btn-wa" 
+               id="waButton">
+                <i>💬</i>
+                Chat via WhatsApp
+            </a>
+            
+            <!-- Button untuk mengirim gambar (membuka gallery WhatsApp) -->
+            <button class="btn btn-outline" id="sendImageBtn">
+                <i>📎</i>
+                Kirim Gambar testing.png
+            </button>
+        </div>
+
+        <div class="image-preview">
+            <div class="image-title">Preview File yang akan dikirim:</div>
+            <div class="preview-box">
+                <div class="file-icon">📷</div>
+                <div class="file-info">
+                    <div class="file-name">testing.png</div>
+                    <div class="file-size">~15 KB</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            *Klik tombol chat untuk membuka WhatsApp<br>
+            *Setelah chat terbuka, klik attachment lalu pilih file testing.png dari device Anda
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const waButton = document.getElementById('waButton');
+            const sendImageBtn = document.getElementById('sendImageBtn');
+            
+            // Data pesan
+            const phoneNumber = '62895622321360';
+            const message = 'hai Panji';
+            
+            // CTWA untuk chat biasa
+            waButton.href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            
+            // Fungsi untuk mengirim gambar (membuka WA dengan instruksi kirim gambar)
+            sendImageBtn.addEventListener('click', function() {
+                // Buat pesan khusus untuk mengirim gambar
+                const imageMessage = `${message}\n\n📸 *Saya ingin mengirim file gambar:*\nNama file: testing.png\n\nSilakan klik attachment (📎) lalu pilih file "testing.png" dari device Anda.`;
+                
+                // Buka WhatsApp dengan pesan tersebut
+                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(imageMessage)}`, '_blank');
+            });
+
+            // Efek hover untuk button
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+
+            // Simulasi auto-send gambar (Catatan: WhatsApp API tidak mengizinkan auto-send file)
+            console.log('⚠️ WhatsApp API tidak mengizinkan pengiriman file otomatis karena alasan keamanan.');
+            console.log('ℹ️ User harus memilih file manual setelah chat terbuka.');
+        });
+    </script>
+</body>
+</html>
