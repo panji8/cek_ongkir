@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CTWA - Kirim ke Panji</title>
+    <title>SuruhBoy - Cek Ongkir Boyolali (8.563 Desa)</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <style>
         * {
             margin: 0;
@@ -15,258 +17,1123 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
 
         .container {
+            max-width: 1400px;
+            margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 500px;
-            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header h1 i {
+            margin-right: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .location-status {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .location-status:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .location-status i {
+            font-size: 1.2em;
+        }
+
+        .location-status span {
+            font-size: 0.9em;
+        }
+
+        .location-active {
+            color: #4ade80;
+        }
+
+        .stats-bar {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
             text-align: center;
         }
 
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 16px;
-        }
-
-        .info-box {
-            background: #f5f5f5;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .info-item {
-            margin-bottom: 10px;
-            color: #444;
-        }
-
-        .info-item strong {
-            color: #25D366;
-            width: 100px;
-            display: inline-block;
-        }
-
-        .info-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .btn-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px 30px;
-            border-radius: 50px;
-            text-decoration: none;
+        .stat-value {
+            font-size: 1.8em;
             font-weight: bold;
-            transition: all 0.3s ease;
-            cursor: pointer;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease infinite;
+            z-index: 9999;
+            display: none;
+        }
+
+        @keyframes loading {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .map-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .map-controls button {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+            padding: 8px 15px;
             border: none;
-            font-size: 16px;
-        }
-
-        .btn-wa {
-            background: #25D366;
+            border-radius: 5px;
+            background: #667eea;
             color: white;
-            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .btn-wa:hover {
-            background: #128C7E;
+        .map-controls button:hover {
+            background: #764ba2;
+        }
+
+        .map-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .form-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .form-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .location-detection {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .location-detection button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .location-detection button:hover {
+            transform: scale(1.05);
+        }
+
+        .location-detection button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .location-info {
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            word-break: break-word;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+
+        .form-group select {
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .btn-check {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 0;
+        }
+
+        .btn-check:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
         }
 
-        .btn-wa i {
-            margin-right: 10px;
-            font-size: 20px;
+        .btn-check:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #25D366;
-            color: #25D366;
+        .btn-use-location {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: 10px;
         }
 
-        .btn-outline:hover {
-            background: #25D366;
+        .btn-use-location:hover:not(:disabled) {
+            background: #667eea;
             color: white;
         }
 
-        .image-preview {
-            margin-top: 30px;
-            border-top: 2px dashed #ddd;
-            padding-top: 25px;
+        .btn-use-location:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #ccc;
         }
 
-        .image-title {
-            font-size: 14px;
-            color: #888;
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner i {
+            font-size: 2em;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .ongkir-result {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .ongkir-result h3 {
+            font-size: 1.2em;
             margin-bottom: 10px;
+            opacity: 0.9;
         }
 
-        .preview-box {
-            background: #f9f9f9;
+        .ongkir-result .price {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .ongkir-result .distance {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .ongkir-result .eta {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .info-panel {
+            background: white;
             border-radius: 10px;
             padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .file-icon {
-            width: 40px;
-            height: 40px;
-            background: #25D366;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-        }
-
-        .file-info {
-            text-align: left;
-        }
-
-        .file-name {
-            font-weight: bold;
+        .info-panel h4 {
             color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .file-size {
-            font-size: 12px;
-            color: #888;
+        .info-panel ul {
+            list-style: none;
         }
 
-        .footer {
-            margin-top: 30px;
-            font-size: 13px;
-            color: #999;
+        .info-panel li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 25px;
+        .info-panel li i {
+            color: #667eea;
+            width: 20px;
+        }
+
+        .info-panel li:last-child {
+            border-bottom: none;
+        }
+
+        .selected-location {
+            background: #e8f4fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 0.9em;
+            border-left: 4px solid #667eea;
+        }
+
+        .data-status {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .data-status i {
+            color: #667eea;
+        }
+
+        footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
             }
             
-            h1 {
-                font-size: 24px;
+            header h1 {
+                font-size: 1.8em;
+            }
+            
+            .stats-bar {
+                gap: 20px;
+            }
+            
+            .stat-value {
+                font-size: 1.2em;
+            }
+            
+            .location-status {
+                position: static;
+                margin-top: 20px;
+                display: inline-flex;
             }
         }
     </style>
 </head>
 <body>
+    <div class="loading-bar" id="loadingBar"></div>
+
     <div class="container">
-        <h1>📱 CTWA - Chat Panji</h1>
-        <p class="subtitle">Klik tombol di bawah untuk chat dengan Panji via WhatsApp</p>
-        
-        <div class="info-box">
-            <div class="info-item">
-                <strong>Nomor:</strong> +62 895-6223-21360
-            </div>
-            <div class="info-item">
-                <strong>Pesan:</strong> "hai Panji"
-            </div>
-            <div class="info-item">
-                <strong>File:</strong> testing.png (akan otomatis terkirim)
-            </div>
-        </div>
-
-        <div class="btn-container">
-            <!-- CTWA Button dengan pesan dan gambar -->
-            <a href="https://wa.me/62895622321360?text=hai%20Panji" 
-               target="_blank" 
-               class="btn btn-wa" 
-               id="waButton">
-                <i>💬</i>
-                Chat via WhatsApp
-            </a>
+        <header>
+            <h1>
+                <i class="fas fa-map-marked-alt"></i>
+                SuruhBoy - Cek Ongkir Boyolali
+            </h1>
+            <p>Cek tarif pengiriman antar desa/dusun di Kabupaten Boyolali</p>
             
-            <!-- Button untuk mengirim gambar (membuka gallery WhatsApp) -->
-            <button class="btn btn-outline" id="sendImageBtn">
-                <i>📎</i>
-                Kirim Gambar testing.png
-            </button>
-        </div>
+            <div class="location-status" onclick="getUserLocation()">
+                <i class="fas fa-location-dot" id="locationIcon"></i>
+                <span id="locationStatus">Deteksi lokasi saya</span>
+            </div>
 
-        <div class="image-preview">
-            <div class="image-title">Preview File yang akan dikirim:</div>
-            <div class="preview-box">
-                <div class="file-icon">📷</div>
-                <div class="file-info">
-                    <div class="file-name">testing.png</div>
-                    <div class="file-size">~15 KB</div>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalPolygons">0</div>
+                    <div class="stat-label">Total Desa/Dusun</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="loadedPolygons">0</div>
+                    <div class="stat-label">Telah Dimuat</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="activeLocation">-</div>
+                    <div class="stat-label">Lokasi Aktif</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="map-controls">
+                    <button onclick="resetMap()" id="resetMapBtn" disabled><i class="fas fa-globe"></i> Reset Peta</button>
+                    <button onclick="togglePolygons()" id="togglePolygonsBtn" disabled><i class="fas fa-layer-group"></i> <span id="polygonToggle">Sembunyikan</span> Polygon</button>
+                    <button onclick="zoomToUser()" id="zoomToUserBtn" disabled><i class="fas fa-location-dot"></i> Zoom ke Saya</button>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <h2><i class="fas fa-search"></i> Cek Ongkir</h2>
+                
+                <div class="data-status" id="dataStatus">
+                    <i class="fas fa-spinner fa-spin"></i> Memuat data desa...
+                </div>
+
+                <div class="location-detection">
+                    <i class="fas fa-location-dot"></i>
+                    <h3>Deteksi Lokasi Saya</h3>
+                    <button onclick="getUserLocation()" id="detectLocationBtn">
+                        <i class="fas fa-satellite-dish"></i> Deteksi Sekarang
+                    </button>
+                    <div class="location-info" id="locationInfo">
+                        Klik tombol di atas untuk mendeteksi lokasi Anda
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="origin">
+                        <i class="fas fa-map-marker-alt"></i> Desa/Dusun Asal
+                        <button class="btn-use-location" onclick="setAsOrigin()" id="useAsOriginBtn" disabled>
+                            <i class="fas fa-location-dot"></i> Gunakan lokasi saya
+                        </button>
+                    </label>
+                    <select id="origin" size="5" style="height: auto;" disabled>
+                        <option value="">Memuat data...</option>
+                    </select>
+                    <div class="selected-location" id="selectedOrigin"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="destination">
+                        <i class="fas fa-map-marker-alt"></i> Desa/Dusun Tujuan
+                        <button class="btn-use-location" onclick="setAsDestination()" id="useAsDestBtn" disabled>
+                            <i class="fas fa-location-dot"></i> Gunakan lokasi saya
+                        </button>
+                    </label>
+                    <select id="destination" size="5" style="height: auto;" disabled>
+                        <option value="">Memuat data...</option>
+                    </select>
+                    <div class="selected-location" id="selectedDestination"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="weight">
+                        <i class="fas fa-weight"></i> Berat (kg)
+                    </label>
+                    <input type="number" id="weight" min="0.1" step="0.1" value="1" disabled>
+                </div>
+
+                <button class="btn-check" id="checkOngkir" onclick="checkOngkir()" disabled>
+                    <i class="fas fa-calculator"></i> Hitung Ongkir
+                </button>
+
+                <div class="loading-spinner" id="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Menghitung ongkir...</p>
+                </div>
+
+                <div class="ongkir-result" id="result">
+                    <h3><i class="fas fa-truck"></i> Tarif Pengiriman</h3>
+                    <div class="price" id="price">Rp 0</div>
+                    <div class="distance" id="distance"></div>
+                    <div class="eta" id="eta"></div>
+                </div>
+
+                <div class="info-panel">
+                    <h4><i class="fas fa-info-circle"></i> Informasi</h4>
+                    <ul>
+                        <li><i class="fas fa-draw-polygon"></i> Total <span id="infoTotal">0</span> desa/dusun</li>
+                        <li><i class="fas fa-tag"></i> Tarif dasar: Rp 5.000/km</li>
+                        <li><i class="fas fa-weight"></i> Tambahan Rp 1.000/kg</li>
+                        <li><i class="fas fa-clock"></i> Estimasi: 30-60 menit/10km</li>
+                        <li><i class="fas fa-location-dot"></i> Fitur deteksi lokasi real-time</li>
+                    </ul>
                 </div>
             </div>
         </div>
 
-        <div class="footer">
-            *Klik tombol chat untuk membuka WhatsApp<br>
-            *Setelah chat terbuka, klik attachment lalu pilih file testing.png dari device Anda
-        </div>
+        <footer>
+            <p><i class="fas fa-code"></i> SuruhBoy - Cek Ongkir Kabupaten Boyolali | Data: <span id="footerTotal">8.563</span> polygon desa/dusun</p>
+        </footer>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const waButton = document.getElementById('waButton');
-            const sendImageBtn = document.getElementById('sendImageBtn');
-            
-            // Data pesan
-            const phoneNumber = '62895622321360';
-            const message = 'hai Panji';
-            
-            // CTWA untuk chat biasa
-            waButton.href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-            
-            // Fungsi untuk mengirim gambar (membuka WA dengan instruksi kirim gambar)
-            sendImageBtn.addEventListener('click', function() {
-                // Buat pesan khusus untuk mengirim gambar
-                const imageMessage = `${message}\n\n📸 *Saya ingin mengirim file gambar:*\nNama file: testing.png\n\nSilakan klik attachment (📎) lalu pilih file "testing.png" dari device Anda.`;
-                
-                // Buka WhatsApp dengan pesan tersebut
-                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(imageMessage)}`, '_blank');
-            });
+        // Nama file GeoJSON (sesuai dengan file di repo)
+        const GEOJSON_FILE = 'kabupaten_boyolali_33.09_batas_desa.geojson';
+        
+        // Inisialisasi peta
+        const map = L.map('map').setView([-7.5, 110.6], 10);
 
-            // Efek hover untuk button
-            const buttons = document.querySelectorAll('.btn');
-            buttons.forEach(button => {
-                button.addEventListener('mouseenter', function() {
-                    this.style.transform = 'scale(1.05)';
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Variable global
+        let desaLayer = L.layerGroup().addTo(map);
+        let markers = {};
+        let desaData = [];
+        let userLocation = null;
+        let userMarker = null;
+        let showPolygons = true;
+        let dataLoaded = false;
+
+        // Fungsi untuk memuat GeoJSON dari file
+        async function loadGeoJSON() {
+            showLoading(true);
+            
+            try {
+                const response = await fetch(GEOJSON_FILE);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const geojson = await response.json();
+                
+                // Update total di UI
+                const totalFeatures = geojson.features?.length || 0;
+                document.getElementById('totalPolygons').textContent = totalFeatures.toLocaleString();
+                document.getElementById('infoTotal').textContent = totalFeatures.toLocaleString();
+                document.getElementById('footerTotal').textContent = totalFeatures.toLocaleString();
+                
+                // Proses data
+                if (geojson.type === 'FeatureCollection') {
+                    processGeoJSON(geojson);
+                } else if (geojson.type === 'Feature') {
+                    processGeoJSON({
+                        type: 'FeatureCollection',
+                        features: [geojson]
+                    });
+                } else {
+                    throw new Error('Format GeoJSON tidak dikenal');
+                }
+                
+            } catch (error) {
+                console.error('Error loading GeoJSON:', error);
+                document.getElementById('dataStatus').innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="color: #ff4444;"></i> 
+                    Gagal memuat data: ${error.message}<br>
+                    <small>Pastikan file ${GEOJSON_FILE} ada di folder yang sama</small>
+                `;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Fungsi untuk memproses GeoJSON
+        function processGeoJSON(geojson) {
+            desaLayer.clearLayers();
+            markers = {};
+            desaData = [];
+            
+            let polygonCount = 0;
+            
+            geojson.features.forEach((feature, index) => {
+                if (feature.geometry && feature.geometry.type === 'Polygon') {
+                    polygonCount++;
+                    
+                    // Konversi koordinat
+                    const coordinates = feature.geometry.coordinates[0].map(coord => [coord[1], coord[0]]);
+                    
+                    // Buat polygon
+                    const polygon = L.polygon(coordinates, {
+                        color: '#667eea',
+                        weight: 1,
+                        opacity: 0.6,
+                        fillColor: '#667eea',
+                        fillOpacity: 0.1
+                    }).addTo(desaLayer);
+                    
+                    // Dapatkan nama desa
+                    const desaName = feature.properties?.name || 
+                                    feature.properties?.desa || 
+                                    feature.properties?.kelurahan || 
+                                    feature.properties?.nama ||
+                                    `Desa ${index + 1}`;
+                    
+                    const kecamatan = feature.properties?.kecamatan || 
+                                     feature.properties?.kec || 
+                                     feature.properties?.kecamatan || 
+                                     '';
+                    
+                    // Hitung pusat polygon
+                    const bounds = polygon.getBounds();
+                    const center = bounds.getCenter();
+                    
+                    // Buat marker kecil
+                    const marker = L.marker(center, {
+                        icon: L.divIcon({
+                            className: 'desa-marker',
+                            html: `<i class="fas fa-circle" style="color: #667eea; font-size: 6px;"></i>`,
+                            iconSize: [6, 6]
+                        })
+                    }).addTo(desaLayer);
+                    
+                    marker.bindPopup(`
+                        <b>${desaName}</b><br>
+                        ${kecamatan ? `Kec. ${kecamatan}<br>` : ''}
+                        <button onclick="setAsOriginFromPopup('${desaName.replace(/'/g, "\\'")}')" style="margin:2px; padding:2px 5px; background:#667eea; color:white; border:none; border-radius:3px; cursor:pointer;">Asal</button>
+                        <button onclick="setAsDestinationFromPopup('${desaName.replace(/'/g, "\\'")}')" style="margin:2px; padding:2px 5px; background:#764ba2; color:white; border:none; border-radius:3px; cursor:pointer;">Tujuan</button>
+                    `);
+                    
+                    // Simpan data
+                    desaData.push({
+                        id: index,
+                        name: desaName,
+                        kecamatan: kecamatan,
+                        center: center,
+                        marker: marker,
+                        polygon: polygon,
+                        bounds: bounds
+                    });
+                    
+                    markers[desaName] = desaData[desaData.length - 1];
+                }
+            });
+            
+            // Update UI
+            document.getElementById('loadedPolygons').textContent = polygonCount.toLocaleString();
+            document.getElementById('dataStatus').innerHTML = `
+                <i class="fas fa-check-circle" style="color: #4ade80;"></i> 
+                Berhasil memuat ${polygonCount.toLocaleString()} desa/dusun
+            `;
+            
+            // Enable controls
+            document.getElementById('resetMapBtn').disabled = false;
+            document.getElementById('togglePolygonsBtn').disabled = false;
+            document.getElementById('zoomToUserBtn').disabled = false;
+            document.getElementById('origin').disabled = false;
+            document.getElementById('destination').disabled = false;
+            document.getElementById('weight').disabled = false;
+            document.getElementById('checkOngkir').disabled = false;
+            
+            // Isi dropdown
+            populateDropdowns();
+            
+            // Zoom ke semua polygon
+            const bounds = desaLayer.getBounds();
+            if (bounds.isValid()) {
+                map.fitBounds(bounds);
+            }
+            
+            dataLoaded = true;
+        }
+
+        // Fungsi untuk mengisi dropdown
+        function populateDropdowns() {
+            const originSelect = document.getElementById('origin');
+            const destSelect = document.getElementById('destination');
+            
+            originSelect.innerHTML = '<option value="">Pilih desa asal</option>';
+            destSelect.innerHTML = '<option value="">Pilih desa tujuan</option>';
+            
+            // Urutkan berdasarkan nama
+            const sortedData = [...desaData].sort((a, b) => a.name.localeCompare(b.name));
+            
+            sortedData.forEach(data => {
+                const option = `<option value="${data.name}">${data.name} ${data.kecamatan ? `(${data.kecamatan})` : ''}</option>`;
+                originSelect.innerHTML += option;
+                destSelect.innerHTML += option;
+            });
+        }
+
+        // Fungsi untuk mendapatkan lokasi user
+        function getUserLocation() {
+            if (!dataLoaded) {
+                alert('Data desa masih dimuat, tunggu sebentar...');
+                return;
+            }
+            
+            document.getElementById('locationStatus').innerHTML = 'Mendeteksi...';
+            document.getElementById('locationIcon').className = 'fas fa-spinner fa-spin';
+            document.getElementById('detectLocationBtn').disabled = true;
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    // Success
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        userLocation = { lat, lng };
+                        
+                        // Update UI
+                        document.getElementById('locationStatus').innerHTML = 'Lokasi terdeteksi';
+                        document.getElementById('locationIcon').className = 'fas fa-location-dot location-active';
+                        document.getElementById('activeLocation').textContent = 'Aktif';
+                        
+                        // Enable buttons
+                        document.getElementById('useAsOriginBtn').disabled = false;
+                        document.getElementById('useAsDestBtn').disabled = false;
+                        
+                        // Hapus marker lama
+                        if (userMarker) {
+                            map.removeLayer(userMarker);
+                        }
+                        
+                        // Buat marker baru
+                        userMarker = L.marker([lat, lng], {
+                            icon: L.divIcon({
+                                className: 'user-location',
+                                html: `<i class="fas fa-user-circle" style="color: #4ade80; font-size: 32px;"></i>`,
+                                iconSize: [32, 32]
+                            })
+                        }).addTo(map);
+                        
+                        userMarker.bindPopup('<b>Lokasi Anda</b>').openPopup();
+                        
+                        // Cari desa terdekat
+                        const nearest = findNearestDesa(lat, lng);
+                        
+                        // Update info
+                        document.getElementById('locationInfo').innerHTML = `
+                            <i class="fas fa-check-circle"></i> Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}<br>
+                            <i class="fas fa-crosshairs"></i> Akurasi: ${position.coords.accuracy.toFixed(0)}m<br>
+                            ${nearest ? `<i class="fas fa-home"></i> Desa terdekat: ${nearest.name}<br>
+                            <i class="fas fa-ruler"></i> Jarak: ${nearest.distance.toFixed(2)} km` : ''}
+                        `;
+                        
+                        // Zoom ke lokasi user
+                        map.setView([lat, lng], 15);
+                        
+                        document.getElementById('detectLocationBtn').disabled = false;
+                    },
+                    // Error
+                    function(error) {
+                        let message = '';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                message = 'Izinkan akses lokasi di browser Anda';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                message = 'Informasi lokasi tidak tersedia';
+                                break;
+                            case error.TIMEOUT:
+                                message = 'Waktu permintaan lokasi habis';
+                                break;
+                            default:
+                                message = 'Terjadi kesalahan';
+                        }
+                        
+                        document.getElementById('locationStatus').innerHTML = 'Gagal deteksi';
+                        document.getElementById('locationIcon').className = 'fas fa-location-dot';
+                        document.getElementById('locationInfo').innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+                        document.getElementById('activeLocation').textContent = '-';
+                        document.getElementById('detectLocationBtn').disabled = false;
+                    }
+                );
+            } else {
+                alert('Browser tidak mendukung geolocation');
+                document.getElementById('locationStatus').innerHTML = 'Tidak didukung';
+                document.getElementById('locationIcon').className = 'fas fa-location-dot';
+                document.getElementById('detectLocationBtn').disabled = false;
+            }
+        }
+
+        // Fungsi mencari desa terdekat
+        function findNearestDesa(lat, lng) {
+            if (desaData.length === 0) return null;
+            
+            let nearest = null;
+            let minDistance = Infinity;
+            
+            desaData.forEach(desa => {
+                const distance = calculateDistance(
+                    lat, lng,
+                    desa.center.lat, desa.center.lng
+                );
+                
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = { ...desa, distance };
+                }
+            });
+            
+            return nearest;
+        }
+
+        // Fungsi set lokasi sebagai asal
+        function setAsOrigin() {
+            if (!userLocation) {
+                alert('Deteksi lokasi Anda terlebih dahulu');
+                return;
+            }
+            
+            const nearest = findNearestDesa(userLocation.lat, userLocation.lng);
+            
+            if (nearest) {
+                document.getElementById('origin').value = nearest.name;
+                document.getElementById('selectedOrigin').innerHTML = `
+                    <i class="fas fa-check"></i> Terpilih: ${nearest.name}<br>
+                    <small>Jarak dari lokasi Anda: ${nearest.distance.toFixed(2)} km</small>
+                `;
+                
+                // Reset style polygon lain
+                desaData.forEach(d => {
+                    if (d.polygon) {
+                        d.polygon.setStyle({
+                            color: '#667eea',
+                            weight: 1,
+                            fillOpacity: 0.1
+                        });
+                    }
                 });
                 
-                button.addEventListener('mouseleave', function() {
-                    this.style.transform = 'scale(1)';
+                // Highlight polygon asal
+                if (nearest.polygon) {
+                    nearest.polygon.setStyle({
+                        color: '#ff4444',
+                        weight: 3,
+                        fillOpacity: 0.3
+                    });
+                }
+                
+                map.setView(nearest.center, 14);
+                nearest.marker.openPopup();
+            }
+        }
+
+        // Fungsi set lokasi sebagai tujuan
+        function setAsDestination() {
+            if (!userLocation) {
+                alert('Deteksi lokasi Anda terlebih dahulu');
+                return;
+            }
+            
+            const nearest = findNearestDesa(userLocation.lat, userLocation.lng);
+            
+            if (nearest) {
+                document.getElementById('destination').value = nearest.name;
+                document.getElementById('selectedDestination').innerHTML = `
+                    <i class="fas fa-check"></i> Terpilih: ${nearest.name}<br>
+                    <small>Jarak dari lokasi Anda: ${nearest.distance.toFixed(2)} km</small>
+                `;
+                
+                map.setView(nearest.center, 14);
+                nearest.marker.openPopup();
+            }
+        }
+
+        // Fungsi set asal dari popup
+        function setAsOriginFromPopup(desaName) {
+            const desa = markers[desaName];
+            if (desa) {
+                document.getElementById('origin').value = desaName;
+                document.getElementById('selectedOrigin').innerHTML = `
+                    <i class="fas fa-check"></i> Terpilih: ${desaName}
+                `;
+                
+                // Reset style polygon lain
+                desaData.forEach(d => {
+                    if (d.polygon) {
+                        d.polygon.setStyle({
+                            color: '#667eea',
+                            weight: 1,
+                            fillOpacity: 0.1
+                        });
+                    }
                 });
+                
+                // Highlight polygon asal
+                if (desa.polygon) {
+                    desa.polygon.setStyle({
+                        color: '#ff4444',
+                        weight: 3,
+                        fillOpacity: 0.3
+                    });
+                }
+            }
+        }
+
+        // Fungsi set tujuan dari popup
+        function setAsDestinationFromPopup(desaName) {
+            const desa = markers[desaName];
+            if (desa) {
+                document.getElementById('destination').value = desaName;
+                document.getElementById('selectedDestination').innerHTML = `
+                    <i class="fas fa-check"></i> Terpilih: ${desaName}
+                `;
+            }
+        }
+
+        // Fungsi menghitung jarak (rumus Haversine)
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        // Fungsi cek ongkir
+        function checkOngkir() {
+            const originName = document.getElementById('origin').value;
+            const destName = document.getElementById('destination').value;
+            const weight = parseFloat(document.getElementById('weight').value) || 1;
+            
+            if (!originName || !destName) {
+                alert('Pilih desa asal dan tujuan!');
+                return;
+            }
+            
+            if (originName === destName) {
+                alert('Desa asal dan tujuan tidak boleh sama!');
+                return;
+            }
+            
+            const origin = markers[originName];
+            const destination = markers[destName];
+            
+            if (!origin || !destination) {
+                alert('Data desa tidak ditemukan');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            
+            setTimeout(() => {
+                const distance = calculateDistance(
+                    origin.center.lat, origin.center.lng,
+                    destination.center.lat, destination.center.lng
+                );
+                
+                // Hitung ongkir
+                const baseRate = 5000;
+                const weightRate = 1000;
+                
+                let ongkir = (distance * baseRate) + (weight * weightRate);
+                ongkir = Math.round(ongkir / 1000) * 1000;
+                
+                // Estimasi waktu (30 menit per 10km)
+                const etaMinutes = Math.round(distance * 3); // 3 menit/km
+                const etaHours = Math.floor(etaMinutes / 60);
+                const etaMins = etaMinutes % 60;
+                
+                document.getElementById('price').innerHTML = `Rp ${ongkir.toLocaleString('id-ID')}`;
+                document.getElementById('distance').innerHTML = `Jarak: ${distance.toFixed(2)} km | Berat: ${weight} kg`;
+                document.getElementById('eta').innerHTML = `Estimasi: ${etaHours > 0 ? etaHours + ' jam ' : ''}${etaMins} menit`;
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('result').style.display = 'block';
+                
+                // Gambar rute
+                highlightRoute(origin, destination);
+            }, 500);
+        }
+
+        // Fungsi highlight rute
+        function highlightRoute(origin, destination) {
+            if (window.routeLayer) {
+                map.removeLayer(window.routeLayer);
+            }
+            
+            window.routeLayer = L.polyline([origin.center, destination.center], {
+                color: '#ff4444',
+                weight: 4,
+                opacity: 0.7,
+                dashArray: '5, 10'
+            }).addTo(map);
+            
+            const bounds = L.latLngBounds([origin.center, destination.center]);
+            map.fitBounds(bounds, { padding: [50, 50] });
+        }
+
+        // Fungsi toggle polygon
+        function togglePolygons() {
+            if (!dataLoaded) return;
+            
+            if (showPolygons) {
+                desaLayer.eachLayer(layer => {
+                    if (layer instanceof L.Polygon) {
+                        map.removeLayer(layer);
+                    }
+                });
+                document.getElementById('polygonToggle').textContent = 'Tampilkan';
+            } else {
+                desaLayer.eachLayer(layer => {
+                    if (layer instanceof L.Polygon) {
+                        layer.addTo(map);
+                    }
+                });
+                document.getElementById('polygonToggle').textContent = 'Sembunyikan';
+            }
+            showPolygons = !showPolygons;
+        }
+
+        // Fungsi reset map
+        function resetMap() {
+            if (!dataLoaded) return;
+            
+            const bounds = desaLayer.getBounds();
+            if (bounds.isValid()) {
+                map.fitBounds(bounds);
+            }
+        }
+
+        // Fungsi zoom ke user
+        function zoomToUser() {
+            if (userLocation) {
+                map.setView([userLocation.lat, userLocation.lng], 16);
+            } else {
+                alert('Lokasi Anda belum terdeteksi');
+            }
+        }
+
+        // Fungsi show/hide loading
+        function showLoading(show) {
+            document.getElementById('loadingBar').style.display = show ? 'block' : 'none';
+        }
+
+        // Load data saat halaman dimuat
+        window.onload = function() {
+            loadGeoJSON();
+            
+            // Event listener untuk dropdown
+            document.getElementById('origin').addEventListener('change', function(e) {
+                if (e.target.value && markers[e.target.value]) {
+                    const desa = markers[e.target.value];
+                    map.setView(desa.center, 14);
+                    desa.marker.openPopup();
+                }
             });
 
-            // Simulasi auto-send gambar (Catatan: WhatsApp API tidak mengizinkan auto-send file)
-            console.log('⚠️ WhatsApp API tidak mengizinkan pengiriman file otomatis karena alasan keamanan.');
-            console.log('ℹ️ User harus memilih file manual setelah chat terbuka.');
-        });
+            document.getElementById('destination').addEventListener('change', function(e) {
+                if (e.target.value && markers[e.target.value]) {
+                    const desa = markers[e.target.value];
+                    map.setView(desa.center, 14);
+                    desa.marker.openPopup();
+                }
+            });
+        };
     </script>
 </body>
 </html>
