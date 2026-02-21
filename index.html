@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuruhBoy - Cek Ongkir Boyolali</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <title>CTWA - Kirim ke Panji</title>
     <style>
         * {
             margin: 0;
@@ -17,629 +15,258 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
             text-align: center;
         }
 
-        header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        header h1 i {
-            margin-right: 10px;
-        }
-
-        header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .map-container {
-            background: #f8f9fa;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        #map {
-            height: 500px;
-            width: 100%;
-        }
-
-        .form-container {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .form-container h2 {
+        h1 {
             color: #333;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-        }
-
-        .form-group select, .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1em;
-            transition: all 0.3s;
-        }
-
-        .form-group select:focus, .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
-        }
-
-        .form-group select {
-            background-color: white;
-            cursor: pointer;
-        }
-
-        .form-group input {
-            background-color: white;
-        }
-
-        .ongkir-result {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .ongkir-result h3 {
-            font-size: 1.2em;
             margin-bottom: 10px;
-            opacity: 0.9;
+            font-size: 28px;
         }
 
-        .ongkir-result .price {
-            font-size: 2.5em;
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .info-box {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .info-item {
+            margin-bottom: 10px;
+            color: #444;
+        }
+
+        .info-item strong {
+            color: #25D366;
+            width: 100px;
+            display: inline-block;
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
             font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .ongkir-result .distance {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .btn-check {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
             border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
+            font-size: 16px;
         }
 
-        .btn-check:hover {
+        .btn-wa {
+            background: #25D366;
+            color: white;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-wa:hover {
+            background: #128C7E;
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
         }
 
-        .btn-check:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
+        .btn-wa i {
+            margin-right: 10px;
+            font-size: 20px;
         }
 
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #25D366;
+            color: #25D366;
         }
 
-        .loading i {
-            font-size: 2em;
-            color: #667eea;
-            animation: spin 1s linear infinite;
+        .btn-outline:hover {
+            background: #25D366;
+            color: white;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .image-preview {
+            margin-top: 30px;
+            border-top: 2px dashed #ddd;
+            padding-top: 25px;
         }
 
-        .info-panel {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .info-panel h4 {
-            color: #333;
+        .image-title {
+            font-size: 14px;
+            color: #888;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .info-panel ul {
-            list-style: none;
-        }
-
-        .info-panel li {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-            color: #666;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .info-panel li i {
-            color: #667eea;
-            width: 20px;
-        }
-
-        .info-panel li:last-child {
-            border-bottom: none;
-        }
-
-        .file-input-container {
-            background: #f0f0f0;
+        .preview-box {
+            background: #f9f9f9;
+            border-radius: 10px;
             padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .file-input-container label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #25D366;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
         }
 
-        .file-input-container input {
-            width: 100%;
-            padding: 10px;
-            border: 2px dashed #667eea;
-            border-radius: 10px;
-            background: white;
-            cursor: pointer;
+        .file-info {
+            text-align: left;
         }
 
-        footer {
-            background: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            border-top: 1px solid #e0e0e0;
-            color: #666;
+        .file-name {
+            font-weight: bold;
+            color: #333;
         }
 
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
+        .file-size {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
             }
             
-            header h1 {
-                font-size: 2em;
+            h1 {
+                font-size: 24px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>
-                <i class="fas fa-truck"></i>
-                SuruhBoy - Cek Ongkir Boyolali
-            </h1>
-            <p>Cek tarif pengiriman antar kecamatan di Kabupaten Boyolali</p>
-        </header>
-
-        <div class="main-content">
-            <div class="map-container">
-                <div id="map"></div>
+        <h1>📱 CTWA - Chat Panji</h1>
+        <p class="subtitle">Klik tombol di bawah untuk chat dengan Panji via WhatsApp</p>
+        
+        <div class="info-box">
+            <div class="info-item">
+                <strong>Nomor:</strong> +62 895-6223-21360
             </div>
+            <div class="info-item">
+                <strong>Pesan:</strong> "hai Panji"
+            </div>
+            <div class="info-item">
+                <strong>File:</strong> testing.png (akan otomatis terkirim)
+            </div>
+        </div>
 
-            <div class="form-container">
-                <h2><i class="fas fa-search"></i> Cek Ongkir</h2>
-                
-                <div class="file-input-container">
-                    <label for="geojsonFile">
-                        <i class="fas fa-file-upload"></i> Upload File GeoJSON
-                    </label>
-                    <input type="file" id="geojsonFile" accept=".geojson, .json" onchange="handleFileUpload(event)">
-                </div>
-                
-                <div class="form-group">
-                    <label for="origin">
-                        <i class="fas fa-map-marker-alt"></i> Kecamatan Asal
-                    </label>
-                    <select id="origin" disabled>
-                        <option value="">Pilih kecamatan asal</option>
-                    </select>
-                </div>
+        <div class="btn-container">
+            <!-- CTWA Button dengan pesan dan gambar -->
+            <a href="https://wa.me/62895622321360?text=hai%20Panji" 
+               target="_blank" 
+               class="btn btn-wa" 
+               id="waButton">
+                <i>💬</i>
+                Chat via WhatsApp
+            </a>
+            
+            <!-- Button untuk mengirim gambar (membuka gallery WhatsApp) -->
+            <button class="btn btn-outline" id="sendImageBtn">
+                <i>📎</i>
+                Kirim Gambar testing.png
+            </button>
+        </div>
 
-                <div class="form-group">
-                    <label for="destination">
-                        <i class="fas fa-map-marker-alt"></i> Kecamatan Tujuan
-                    </label>
-                    <select id="destination" disabled>
-                        <option value="">Pilih kecamatan tujuan</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="weight">
-                        <i class="fas fa-weight"></i> Berat (kg)
-                    </label>
-                    <input type="number" id="weight" min="0.1" step="0.1" value="1">
-                </div>
-
-                <button class="btn-check" id="checkOngkir" onclick="checkOngkir()" disabled>
-                    <i class="fas fa-calculator"></i> Hitung Ongkir
-                </button>
-
-                <div class="loading" id="loading">
-                    <i class="fas fa-spinner"></i>
-                    <p>Menghitung ongkir...</p>
-                </div>
-
-                <div class="ongkir-result" id="result" style="display: none;">
-                    <h3><i class="fas fa-truck"></i> Tarif Pengiriman</h3>
-                    <div class="price" id="price">Rp 0</div>
-                    <div class="distance" id="distance"></div>
-                </div>
-
-                <div class="info-panel">
-                    <h4><i class="fas fa-info-circle"></i> Informasi</h4>
-                    <ul>
-                        <li><i class="fas fa-tag"></i> Tarif dasar: Rp 5.000/km</li>
-                        <li><i class="fas fa-weight"></i> Minimal 1kg, kelipatan Rp 1.000/kg</li>
-                        <li><i class="fas fa-clock"></i> Estimasi: 1-2 hari kerja</li>
-                        <li><i class="fas fa-database"></i> Data: 19 kecamatan di Boyolali</li>
-                    </ul>
+        <div class="image-preview">
+            <div class="image-title">Preview File yang akan dikirim:</div>
+            <div class="preview-box">
+                <div class="file-icon">📷</div>
+                <div class="file-info">
+                    <div class="file-name">testing.png</div>
+                    <div class="file-size">~15 KB</div>
                 </div>
             </div>
         </div>
 
-        <footer>
-            <p><i class="fas fa-code"></i> SuruhBoy - Cek Ongkir Kabupaten Boyolali | Data dari GeoJSON</p>
-        </footer>
+        <div class="footer">
+            *Klik tombol chat untuk membuka WhatsApp<br>
+            *Setelah chat terbuka, klik attachment lalu pilih file testing.png dari device Anda
+        </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Data kecamatan di Kabupaten Boyolali
-        const boyolaliData = {
-            type: "FeatureCollection",
-            features: []
-        };
-
-        // Data kecamatan Boyolali (19 kecamatan)
-        const kecamatanList = [
-            "Ampel", "Andong", "Banyudono", "Boyolali", "Cepogo", 
-            "Juwangi", "Karanggede", "Kemusu", "Klego", "Mojosongo",
-            "Musuk", "Ngemplak", "Nogosari", "Sambi", "Sawit",
-            "Selo", "Simo", "Teras", "Wonosegoro"
-        ];
-
-        // Koordinat pusat setiap kecamatan (berdasarkan perkiraan)
-        const kecamatanCoords = {
-            "Ampel": [-7.4315, -110.5742],
-            "Andong": [-7.3728, -110.7361],
-            "Banyudono": [-7.5333, -110.6911],
-            "Boyolali": [-7.5331, -110.6036],
-            "Cepogo": [-7.5031, -110.5203],
-            "Juwangi": [-7.2119, -110.7358],
-            "Karanggede": [-7.3219, -110.6497],
-            "Kemusu": [-7.2631, -110.6967],
-            "Klego": [-7.3431, -110.5856],
-            "Mojosongo": [-7.5633, -110.5936],
-            "Musuk": [-7.5706, -110.5397],
-            "Ngemplak": [-7.4919, -110.7169],
-            "Nogosari": [-7.4286, -110.7197],
-            "Sambi": [-7.4956, -110.6903],
-            "Sawit": [-7.5619, -110.7336],
-            "Selo": [-7.4914, -110.4406],
-            "Simo": [-7.3842, -110.6867],
-            "Teras": [-7.5642, -110.6511],
-            "Wonosegoro": [-7.2939, -110.6689]
-        };
-
-        // Inisialisasi peta
-        const map = L.map('map').setView([-7.5, 110.6], 10);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Variable untuk menyimpan layer dan marker
-        let kecamatanLayer = L.layerGroup().addTo(map);
-        let polygonLayer = L.layerGroup().addTo(map);
-        let markers = {};
-        let boyolaliPolygon = null;
-
-        // Fungsi untuk handle upload file
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const geojson = JSON.parse(e.target.result);
-                    displayGeoJSON(geojson);
-                } catch (error) {
-                    alert('Error parsing GeoJSON file: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // Fungsi untuk menampilkan GeoJSON di peta
-        function displayGeoJSON(geojson) {
-            // Hapus polygon yang ada
-            polygonLayer.clearLayers();
+        document.addEventListener('DOMContentLoaded', function() {
+            const waButton = document.getElementById('waButton');
+            const sendImageBtn = document.getElementById('sendImageBtn');
             
-            // Tampilkan polygon Boyolali
-            if (geojson.geometry && geojson.geometry.type === 'Polygon') {
-                boyolaliPolygon = L.polygon(geojson.geometry.coordinates[0].map(coord => [coord[1], coord[0]]), {
-                    color: '#667eea',
-                    weight: 3,
-                    opacity: 0.8,
-                    fillColor: '#667eea',
-                    fillOpacity: 0.2
-                }).addTo(polygonLayer);
-                
-                boyolaliPolygon.bindPopup(`
-                    <b>${geojson.properties.name}</b><br>
-                    Kode: ${geojson.properties.code}<br>
-                    Level: ${geojson.properties.level}
-                `);
-                
-                // Zoom ke polygon
-                map.fitBounds(boyolaliPolygon.getBounds());
-                
-                // Generate data kecamatan
-                generateKecamatanData();
-            } else {
-                alert('File GeoJSON tidak valid. Harap upload file yang benar.');
-            }
-        }
-
-        // Fungsi untuk generate data kecamatan dari polygon
-        function generateKecamatanData() {
-            // Buat data kecamatan
-            kecamatanList.forEach((kecamatan, index) => {
-                const coords = kecamatanCoords[kecamatan];
-                
-                const feature = {
-                    type: "Feature",
-                    properties: {
-                        name: kecamatan,
-                        kecamatan: kecamatan,
-                        code: `33.09.${String(index + 1).padStart(3, '0')}`,
-                        center: [coords[1], coords[0]]
-                    },
-                    geometry: {
-                        type: "Point",
-                        coordinates: [coords[1], coords[0]]
-                    }
-                };
-                
-                boyolaliData.features.push(feature);
-            });
+            // Data pesan
+            const phoneNumber = '62895622321360';
+            const message = 'hai Panji';
             
-            // Tampilkan di peta
-            displayKecamatan();
-        }
-
-        // Fungsi untuk menampilkan kecamatan di peta
-        function displayKecamatan() {
-            kecamatanLayer.clearLayers();
-            markers = {};
+            // CTWA untuk chat biasa
+            waButton.href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
             
-            boyolaliData.features.forEach(feature => {
-                const coords = feature.geometry.coordinates;
-                const name = feature.properties.kecamatan;
+            // Fungsi untuk mengirim gambar (membuka WA dengan instruksi kirim gambar)
+            sendImageBtn.addEventListener('click', function() {
+                // Buat pesan khusus untuk mengirim gambar
+                const imageMessage = `${message}\n\n📸 *Saya ingin mengirim file gambar:*\nNama file: testing.png\n\nSilakan klik attachment (📎) lalu pilih file "testing.png" dari device Anda.`;
                 
-                // Buat marker dengan icon kustom
-                const marker = L.marker([coords[1], coords[0]], {
-                    icon: L.divIcon({
-                        className: 'custom-marker',
-                        html: `<i class="fas fa-map-marker-alt" style="color: #667eea; font-size: 24px;"></i>`,
-                        iconSize: [24, 24],
-                        iconAnchor: [12, 24]
-                    })
-                }).addTo(kecamatanLayer);
-                
-                marker.bindPopup(`
-                    <b>${name}</b><br>
-                    Kode: ${feature.properties.code}
-                `);
-                
-                markers[name] = {
-                    marker: marker,
-                    coords: [coords[1], coords[0]]
-                };
+                // Buka WhatsApp dengan pesan tersebut
+                window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(imageMessage)}`, '_blank');
             });
 
-            // Enable dropdown dan button
-            document.getElementById('origin').disabled = false;
-            document.getElementById('destination').disabled = false;
-            document.getElementById('checkOngkir').disabled = false;
-            
-            // Isi dropdown
-            populateDropdowns();
-        }
-
-        // Fungsi untuk mengisi dropdown
-        function populateDropdowns() {
-            const originSelect = document.getElementById('origin');
-            const destSelect = document.getElementById('destination');
-            
-            // Kosongkan dropdown
-            originSelect.innerHTML = '<option value="">Pilih kecamatan asal</option>';
-            destSelect.innerHTML = '<option value="">Pilih kecamatan tujuan</option>';
-            
-            const sortedKecamatan = kecamatanList.sort();
-            
-            sortedKecamatan.forEach(kecamatan => {
-                originSelect.innerHTML += `<option value="${kecamatan}">${kecamatan}</option>`;
-                destSelect.innerHTML += `<option value="${kecamatan}">${kecamatan}</option>`;
+            // Efek hover untuk button
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
             });
-        }
 
-        // Fungsi untuk menghitung jarak (rumus Haversine)
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Radius bumi dalam km
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            const distance = R * c;
-            return distance;
-        }
-
-        // Fungsi utama untuk cek ongkir
-        function checkOngkir() {
-            const origin = document.getElementById('origin').value;
-            const destination = document.getElementById('destination').value;
-            const weight = parseFloat(document.getElementById('weight').value) || 1;
-            
-            if (!origin || !destination) {
-                alert('Silakan pilih kecamatan asal dan tujuan!');
-                return;
-            }
-            
-            if (origin === destination) {
-                alert('Kecamatan asal dan tujuan tidak boleh sama!');
-                return;
-            }
-            
-            // Tampilkan loading
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('result').style.display = 'none';
-            
-            setTimeout(() => {
-                // Hitung jarak
-                const originCoords = markers[origin].coords;
-                const destCoords = markers[destination].coords;
-                
-                const distance = calculateDistance(
-                    originCoords[0], originCoords[1],
-                    destCoords[0], destCoords[1]
-                );
-                
-                // Hitung ongkir (Rp 5.000 per km + Rp 1.000 per kg)
-                const baseRate = 5000; // per km
-                const weightRate = 1000; // per kg
-                
-                let ongkir = (distance * baseRate) + (weight * weightRate);
-                ongkir = Math.round(ongkir / 1000) * 1000; // Pembulatan ke ribuan
-                
-                // Tampilkan hasil
-                document.getElementById('price').innerHTML = `Rp ${ongkir.toLocaleString('id-ID')}`;
-                document.getElementById('distance').innerHTML = `Jarak: ${distance.toFixed(2)} km | Berat: ${weight} kg`;
-                
-                // Sembunyikan loading, tampilkan hasil
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('result').style.display = 'block';
-                
-                // Highlight rute di peta
-                highlightRoute(origin, destination);
-            }, 1000);
-        }
-
-        // Fungsi untuk highlight rute
-        function highlightRoute(origin, destination) {
-            // Hapus layer rute yang ada
-            if (window.routeLayer) {
-                map.removeLayer(window.routeLayer);
-            }
-            
-            const originCoords = markers[origin].coords;
-            const destCoords = markers[destination].coords;
-            
-            // Buat garis lurus antara dua titik
-            window.routeLayer = L.polyline([originCoords, destCoords], {
-                color: '#ff4444',
-                weight: 4,
-                opacity: 0.7,
-                dashArray: '5, 10'
-            }).addTo(map);
-            
-            // Zoom ke kedua titik
-            const bounds = L.latLngBounds([originCoords, destCoords]);
-            map.fitBounds(bounds, { padding: [50, 50] });
-            
-            // Buka popup marker
-            markers[origin].marker.openPopup();
-        }
-
-        // Load data awal (menggunakan polygon dari file yang diupload)
-        window.onload = function() {
-            // Tampilkan instruksi untuk upload file
-            alert('Silakan upload file GeoJSON Kabupaten Boyolali untuk melihat peta!');
-            
-            // Event listener untuk dropdown
-            document.getElementById('origin').addEventListener('change', function(e) {
-                if (e.target.value && markers[e.target.value]) {
-                    markers[e.target.value].marker.openPopup();
-                }
-            });
-            
-            document.getElementById('destination').addEventListener('change', function(e) {
-                if (e.target.value && markers[e.target.value]) {
-                    markers[e.target.value].marker.openPopup();
-                }
-            });
-        };
+            // Simulasi auto-send gambar (Catatan: WhatsApp API tidak mengizinkan auto-send file)
+            console.log('⚠️ WhatsApp API tidak mengizinkan pengiriman file otomatis karena alasan keamanan.');
+            console.log('ℹ️ User harus memilih file manual setelah chat terbuka.');
+        });
     </script>
 </body>
 </html>
